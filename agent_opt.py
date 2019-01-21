@@ -14,6 +14,7 @@ import sys
 import os
 import math
 
+
 #Find nth min number in array
 def findMin(array,nthMin):
     indeks_min = array.index(min(array))
@@ -40,135 +41,129 @@ def detectEmptyElement(dataset, indeks):
     else:
         return 0
     
-def checkEmptyElement (dataset):
+def checkEmptyElement (dataset, switch):
+    switch=0
     for x in range(44):
-        for y in range(11):
-            if is_nan(dataset.iloc[x,y]):
-                
-            else:
-                return 0
+        if switch==1:
+            break
+        else:
+            for y in range(11):
+                if is_nan(dataset.iloc[x,y]):
+                    switch=1
+                    break
+    return switch
+         
             
 
 #Main starts here    
 
 #Import datasets
-dataset_1 = pd.read_csv('Group_1.csv')
-dataset_2 = pd.read_csv('Group_2.csv')
+dataset_1 = pd.read_csv('agent_group1.csv')
+dataset_2 = pd.read_csv('agent_group2.csv')
 nextMin=1
 prevMin=0
 n1 = [0 for i in range(44)]
 empty=0
 minRow=0
+switch=0
 
-a=detectEmptyElement(dataset_2, 9)
+a=detectEmptyElement(dataset_2, 22)
 
     
+
+#First optimization
+      while checkEmptyElement(dataset_2,switch)==1:
+          for agentNo in range(0, 44):
+                if detectEmptyElement(dataset_2, agentNo)!=0:
+                    for x in range(0, 44):
+                        n1[x] = dataset_1.iloc[agentNo,x+1]
+                    prevMin=0
+                    nextMin=1
+                    minRow=0
+                    while nextMin>prevMin  and minRow<1:
+                        prevMin=nextMin
+                        for x in range(0, 44):
+                            n1[x] = dataset_1.iloc[agentNo,x+1]
+                        minRow = findMin(n1,nextMin)
+                        index = n1.index(minRow)
+                        agentEmptyRow = detectEmptyElement(dataset_2, agentNo)
+                        empty=detectEmptyElement(dataset_2,index)
+                        if empty != 0 and agentEmptyRow>0 and (index+1)!=dataset_2.iloc[agentNo,1] and (index+1)!=dataset_2.iloc[agentNo,2] and (index+1)!=dataset_2.iloc[agentNo,3] and (index+1)!=dataset_2.iloc[agentNo,4]  and minRow<1:
+                            dataset_2.iloc[agentNo,agentEmptyRow] = index+ 1
+                            dataset_2.iloc[agentNo,agentEmptyRow+5] = minRow
+                            dataset_2.iloc[index,empty] = agentNo+1
+                            dataset_2.iloc[index,empty+5] = minRow
+                        else:
+                            nextMin+= 1
+                else:
+                     nextMin+= 1
     
-    while checkEmptyElement(dataset_2)==1:
+    
+#Second optimization (Each clolumn one by one)
+                     
+          while checkEmptyElement(dataset_2,switch)==1:
+    
+          for z in range(1, 6):
+              for agentNo in range(0, 44):
+                    if detectEmptyElement(dataset_2, agentNo) == z:
+                        for x in range(0, 44):
+                            n1[x] = dataset_1.iloc[agentNo,x+1]
+                        prevMin=0
+                        nextMin=1
+                        minRow=0
+                        while nextMin>prevMin  and minRow<1:
+                            prevMin=nextMin
+                            for x in range(0, 44):
+                                n1[x] = dataset_1.iloc[agentNo,x+1]
+                            minRow = findMin(n1,nextMin)
+                            index = n1.index(minRow)
+                            agentEmptyRow = detectEmptyElement(dataset_2, agentNo)
+                            empty=detectEmptyElement(dataset_2,index)
+                            if empty == z and agentEmptyRow == z and (index+1)!=dataset_2.iloc[agentNo,1] and (index+1)!=dataset_2.iloc[agentNo,2] and (index+1)!=dataset_2.iloc[agentNo,3] and (index+1)!=dataset_2.iloc[agentNo,4]  and minRow<1:
+                                dataset_2.iloc[agentNo,agentEmptyRow] = index+ 1
+                                dataset_2.iloc[agentNo,agentEmptyRow+5] = minRow
+                                dataset_2.iloc[index,empty] = agentNo+1
+                                dataset_2.iloc[index,empty+5] = minRow
+                            else:
+                                nextMin+= 1
+                    else:
+                         nextMin+= 1
+                         
+
+        
+      for z in range(1, 6):
+              for agentNo in range(0, 44):
+                    if z % 2 == 0:
+                       agentNo = 43 - agentNo   
+                    if detectEmptyElement(dataset_2, agentNo) == z:
+                        for x in range(0, 44):
+                            n1[x] = dataset_1.iloc[agentNo,x+1]
+                        prevMin=0
+                        nextMin=1
+                        minRow=0
+                        while nextMin>prevMin  and minRow<1:
+                            prevMin=nextMin
+                            for x in range(0, 44):
+                                n1[x] = dataset_1.iloc[agentNo,x+1]
+                            minRow = findMin(n1,nextMin)
+                            index = n1.index(minRow)
+                            agentEmptyRow = detectEmptyElement(dataset_2, agentNo)
+                            empty=detectEmptyElement(dataset_2,index)
+                            if empty == z and agentEmptyRow == z and (index+1)!=dataset_2.iloc[agentNo,1] and (index+1)!=dataset_2.iloc[agentNo,2] and (index+1)!=dataset_2.iloc[agentNo,3] and (index+1)!=dataset_2.iloc[agentNo,4]  and minRow<1:
+                                dataset_2.iloc[agentNo,agentEmptyRow] = index+ 1
+                                dataset_2.iloc[agentNo,agentEmptyRow+5] = minRow
+                                dataset_2.iloc[index,empty] = agentNo+1
+                                dataset_2.iloc[index,empty+5] = minRow
+                            else:
+                                nextMin+= 1
+                    else:
+                         nextMin+= 1
         
         
-      for agentNo in range(0, 2):
-            for x in range(0, 44):
-                n1[x] = dataset_1.iloc[agentNo,x+1]
-            prevMin=0
-            nextMin=1
-            minRow=0
-            while nextMin>prevMin and detectEmptyElement(dataset_2, agentNo)!=0 and minRow<1:
-                prevMin=nextMin
-                minRow = findMin(n1,nextMin)
-                index = n1.index(minRow)
-                empty=detectEmptyElement(dataset_2,index)
-                if     is_nan(dataset_2.iloc[agentNo, 1]) and empty!=0 and minRow<1 :
-                       dataset_2.iloc[agentNo,1] = index+ 1
-                       dataset_2.iloc[agentNo,6] = minRow
-                       dataset_2.iloc[index,empty] = agentNo+1
-                       dataset_2.iloc[index,empty+5] = minRow
-                elif  is_nan(dataset_2.iloc[agentNo, 2])  and (index+1)!=dataset_2.iloc[agentNo,1] and empty!=0 and minRow<1:
-                       dataset_2.iloc[agentNo,2] = index+1
-                       dataset_2.iloc[agentNo,7] = minRow
-                       dataset_2.iloc[index,empty] = agentNo+1
-                       dataset_2.iloc[index,empty+5] = minRow    
-                elif  is_nan(dataset_2.iloc[agentNo, 3])  and (index+1)!=dataset_2.iloc[agentNo,1] and (index+1)!=dataset_2.iloc[agentNo,2] and empty!=0 and minRow<1:
-                       dataset_2.iloc[agentNo,3] = index+1
-                       dataset_2.iloc[agentNo,8] = minRow
-                       dataset_2.iloc[index,empty] = agentNo+1
-                       dataset_2.iloc[index,empty+5] = minRow        
-                elif  is_nan(dataset_2.iloc[agentNo, 4])  and (index+1)!=dataset_2.iloc[agentNo,1] and (index+1)!=dataset_2.iloc[agentNo,2] and (index+1)!=dataset_2.iloc[agentNo,3] and empty!=0 and minRow<1:
-                       dataset_2.iloc[agentNo,4] = index+1
-                       dataset_2.iloc[agentNo,9] = minRow
-                       dataset_2.iloc[index, empty] = agentNo+1
-                       dataset_2.iloc[index,empty+5] = minRow
-                elif  is_nan(dataset_2.iloc[agentNo, 5])  and (index+1)!=dataset_2.iloc[agentNo,1] and (index+1)!=dataset_2.iloc[agentNo,2] and (index+1)!=dataset_2.iloc[agentNo,3] and (index+1)!=dataset_2.iloc[agentNo,4]and empty!=0 and minRow<1:
-                       dataset_2.iloc[agentNo,5] = index+1
-                       dataset_2.iloc[agentNo,10] = minRow
-                       dataset_2.iloc[index, empty] = agentNo+1
-                       dataset_2.iloc[index,empty+5] = minRow
-                else: 
-                    nextMin+= 1
-                     
     
     
     
     
     
 
-          for agentNo in range(0, 1):
-            for x in range(0, 44):
-                n1[x] = dataset_1.iloc[agentNo,x+1]
-            prevMin=0
-            nexMin=1
-            minRow=0
-            while nextMin>prevMin and detectEmptyElement(dataset_2, agentNo)!=0 and minRow<1:
-                prevMin=nextMin
-                minRow = findMin(n1,nextMin)
-                index = n1.index(minRow)
-                empty=detectEmptyElement(dataset_2,index)
-                if     is_nan((dataset_2.iloc[agentNo, 1]))  and empty!=0 and minRow<1 :
-                       dataset_2.iloc[agentNo,1] = index+ 1
-                       dataset_2.iloc[agentNo,5] = minRow
-                       dataset_2.iloc[index,empty] = agentNo+1
-                       dataset_2.iloc[index,empty+5] = minRow
-                elif  is_nan(dataset_2.iloc[agentNo, 2])  and (index+1)!=dataset_2.iloc[agentNo,1] and empty!=0 and minRow<1:
-                       dataset_2.iloc[agentNo,2] = index+1
-                       dataset_2.iloc[agentNo,6] = minRow
-                       dataset_2.iloc[index,empty] = agentNo+1
-                       dataset_2.iloc[index,empty+5] = minRow    
-                elif  is_nan(dataset_2.iloc[agentNo, 3])  and (index+1)!=dataset_2.iloc[agentNo,1] and (index+1)!=dataset_2.iloc[agentNo,2] and empty!=0 and minRow<1:
-                       dataset_2.iloc[agentNo,3] = index+1
-                       dataset_2.iloc[agentNo,7] = minRow
-                       dataset_2.iloc[index,empty] = agentNo+1
-                       dataset_2.iloc[index,empty+5] = minRow        
-                elif  is_nan(dataset_2.iloc[agentNo, 4])  and (index+1)!=dataset_2.iloc[agentNo,1] and (index+1)!=dataset_2.iloc[agentNo,2] and (index+1)!=dataset_2.iloc[agentNo,3] and empty!=0 and minRow<1:
-                       dataset_2.iloc[agentNo,4] = index+1
-                       dataset_2.iloc[agentNo,8] = minRow
-                       dataset_2.iloc[index, empty] = agentNo+1
-                       dataset_2.iloc[index,empty+5] = minRow
-                else: 
-                    nextMin+= 1
-                     
-    
-    
-
-
-
-
-
-#Create nth row as array
-for i in range(0, 44):
-    n1[i] = dataset_1.iloc[0,i+1]     
-
-
-
-
-X= min(dataset_1.iloc[, :])
-
-dataset_1.idxmin(axis=0, skipna=True)
-
-indeks_min = dataset_1.index(min(dataset_1.iloc[0, :]))
-
-
-
-for z in range(0, size):
-    dummy[z] = dataset.iloc[z,1]
-    indeks_min = dummy.index(min(dummy))
-    dataset.at[z,4]=Agents[M]
+ 
