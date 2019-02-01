@@ -5,7 +5,6 @@ Created on Wed Jan 16 11:29:10 2019
 @author: A60178
 """
 
-
 import numpy as np
 import matplotlib.pyplot as plt 
 import pandas as pd  
@@ -13,7 +12,6 @@ import random
 import sys
 import os
 import math
-
 
 #Find nth min number in array
 def findMin(array,nthMin):
@@ -36,7 +34,8 @@ def findMax(array,nthMax):
 def is_nan(x):
     return (x is np.nan or x != x)   
 
-#
+
+#Check  is data exist
 def isExist(dataset, n, log):
     log=0
     for y in range(1,6):
@@ -49,7 +48,7 @@ def isExist(dataset, n, log):
                     break
     return log
     
-
+#Detect empty element in row
 def detectEmptyElement(dataset, indeks):
     if is_nan(dataset.iloc[indeks,1]):
         return 1
@@ -64,8 +63,7 @@ def detectEmptyElement(dataset, indeks):
     else:
         return 0
     
-
-    
+#Check is there any null value in dataset   
     
 def checkEmptyElement (dataset, switch):
     switch=0
@@ -79,15 +77,7 @@ def checkEmptyElement (dataset, switch):
                     break
     return switch
          
-            
-
 #Main starts here    
-
-
-
-a=detectEmptyElement(dataset_2, 22)
-
-    
 
 #First optimization
       while checkEmptyElement(dataset_2,switch)==1:
@@ -115,7 +105,6 @@ a=detectEmptyElement(dataset_2, 22)
                             nextMin+= 1
                 else:
                      nextMin+= 1
-    
     
 #Second optimization (Each clolumn one by one)
                      
@@ -146,14 +135,8 @@ a=detectEmptyElement(dataset_2, 22)
                                 nextMin+= 1
                     else:
                          nextMin+= 1
-              
-                
-                
-                
-                
-           
-            
-        #Import datasets
+                 
+#Import datasets
 dataset_1 = pd.read_csv('agent_group1.csv')
 dataset_2 = pd.read_csv('agent_group2.csv')
 dataset_3 = pd.read_csv('agent_group3.csv')
@@ -168,7 +151,9 @@ zeroOne=0
 n=1
 p=0
 
-#â€¢Ä°nitilazition
+
+
+#initilazition (determine firs elemnt of groups)
 dataset_3.iloc[0, 1] =1
 for x in range(0, 44):
     n1[x] = dataset_1.iloc[0,x+1]
@@ -190,7 +175,8 @@ for i in range(2,9): #--------------------------------------Other groups start
         else:
             nextMax+= 1
 
-#Distirubiton of other agents
+            
+#Distirubiton of other agents(Put other agent into groups one by one)
 for agentNo in range(0, 44):
     minSkorList=[0 for i in range(9)]
     if isExist(dataset_3, agentNo, zeroOne ) == 0:
@@ -210,8 +196,10 @@ for agentNo in range(0, 44):
                 dataset_3.iloc[location,emptyElement] = agentNo+1
             else:
                 n+=1
- 
-
+                
+                
+                
+#Add score of the agent next to them
 for x in range(0,9):           
     for y in range(1,6):
           if is_nan(dataset_3.iloc[x,z]) == False:
